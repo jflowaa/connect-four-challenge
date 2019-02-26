@@ -6,13 +6,18 @@ class Bot:
     def __init__(self):
         self.board = []
 
-    def make_move(self):
-        time.sleep(random.randint(0, 2))
+    @staticmethod
+    def make_move():
+        """
+        Return a column to insert player token into.
+
+        Returns a column to insert the player token into, this column is
+        determined based on the bot's logic and the current board state.
+        """
+        time.sleep(random.randint(0, 1) + .5)
         return random.randint(0, 6)
 
     def print_board(self):
-        print("[+] Current Board:")
+        print("[*] Current Board:")
         for row in self.board:
-            for column in row:
-                print(column, end="")
-            print()
+            print("|" + "|".join(row) + "|")

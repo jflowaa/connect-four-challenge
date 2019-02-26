@@ -24,10 +24,10 @@ module.exports = class Board {
     return board;
   }
 
-  move(piece, column) {
+  move(token, column) {
     for (var i = ConfigConstants.ROWS - 1; i >= 0; i--) {
       if (this.board[i][column] === ConfigConstants.EMPTY_TOKEN) {
-        this.board[i][column] = piece;
+        this.board[i][column] = token;
         break;
       }
     }
@@ -51,6 +51,17 @@ module.exports = class Board {
     }
     svg += "</svg>";
     return svg;
+  }
+
+  checkForTie() {
+    for (var row = 0; row < ConfigConstants.ROWS; row++) {
+      for (var column = 0; column < ConfigConstants.COLUMNS; column++) {
+        if (this.board[row][column] === ConfigConstants.EMPTY_TOKEN) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   checkWinner(token) {

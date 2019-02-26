@@ -3,6 +3,7 @@ import json
 import sys
 
 from bot import Bot
+from human import Human
 
 SERVER_URL = "ws://127.0.0.1:3000/"
 
@@ -12,9 +13,13 @@ class ConnectFourClient(WebSocketClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.player_token = None
-        self.bot = Bot()
+        if len(sys.argv) > 1 and sys.argv[1] == "human":
+            self.bot = Human()
+        else:
+            self.bot = Bot()
 
     def opened(self):
+        print("[*] Connected to server")
         payload = {"command": "init"}
         self.send(json.dumps(payload))
 
@@ -34,6 +39,7 @@ class ConnectFourClient(WebSocketClient):
             if "waiting" == command:
                 player = payload.get("player")
                 if self.player_token == player:
+                    print("[+] Player's turn")
                     self.bot.board = payload.get("board")
                     column = self.bot.make_move()
                     self.bot.print_board()

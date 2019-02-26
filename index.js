@@ -34,13 +34,15 @@ app.ws("/", function(ws, req) {
             board.winningToken = playerManager.waitingOnPlayer;
             playerManager.broadcastWinnerMessage(expressWs);
           } else {
+            var tie = board.checkForTie();
+            if (tie) {
+              playerManager.waitingOnPlayer = "";
+              playerManager.broadcastWinnerMessage(expressWs);
+            }
             playerManager.swapWaitingOnPlayer();
             playerManager.broadcastWaitingMessage(expressWs, board.board);
           }
         }
-        break;
-      case PlayerCommands.BOARD:
-        ws.send(JSON.stringify({ board: board.board }));
         break;
       default:
         ws.send("Invalid Command");
@@ -72,4 +74,4 @@ app.get("/reset", function(req, res) {
 });
 
 app.listen(ConfigConstants.PORT, ConfigConstants.HOST);
-console.log(`Server running: http://127.0.0.1:${ConfigConstants.PORT}`);
+console.log(`[*] Server running: http://127.0.0.1:${ConfigConstants.PORT}/`);
