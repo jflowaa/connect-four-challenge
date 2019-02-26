@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript">
+      var ws = new WebSocket("ws://127.0.0.1:3000/");
+      // ws.onopen = function() {
+      //   var initPayload = { command: "move", player: "x", column: 1 };
+      //   ws.send(JSON.stringify(initPayload));
+      // };
+      ws.onmessage = function(evt) {
+        getBoard();
+      };
+      function getBoard() {
+        fetch("http://127.0.0.1:3000/svg").then(function(response) {
+          response.text().then(function(text) {
+            document.getElementById("board").innerHTML = text;
+          });
+        });
+      }
+      getBoard();
+    </script>
+  </head>
+  <body>
+    <div id="board"></div>
+  </body>
+</html>
