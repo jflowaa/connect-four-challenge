@@ -1,19 +1,45 @@
 const PlayerCommands = require("./PlayerCommands.js");
-const PLAYER_ONE = "x";
-const PLAYER_TWO = "o";
-const MAX_PLAYERS_ERROR = "Only two players can join";
+const ConfigConstants = require("./ConfigConstants.js");
 
 module.exports = class PlayerManager {
   constructor() {
     this.activePlayers = [];
-    this.waitingOnPlayer = PLAYER_ONE;
+    this.waitingOnPlayer = ConfigConstants.PLAYER_ONE_TOKEN;
   }
 
-  broadcastWaitingMessage(expressWs) {
+  reset() {
+    this.activePlayers = [];
+    this.waitingOnPlayer = ConfigConstants.PLAYER_ONE_TOKEN;
+  }
+
+  broadcastWaitingMessage(expressWs, board) {
     expressWs.getWss("/").clients.forEach(client => {
       client.send(
         JSON.stringify({
           command: PlayerCommands.WAITING,
+          player: this.waitingOnPlayer,
+          board: board
+        })
+      );
+    });
+  }
+
+  broadcastPlayerJoinedMessage(expressWs) {
+    expressWs.getWss("/").clients.forEach(client => {
+      client.send(
+        JSON.stringify({
+          command: PlayerCommands.JOINED,
+          player: this.activePlayers[this.activePlayers.length - 1]
+        })
+      );
+    });
+  }
+
+  broadcastWinnerMessage(expressWs) {
+    expressWs.getWss("/").clients.forEach(client => {
+      client.send(
+        JSON.stringify({
+          command: PlayerCommands.WINNER,
           player: this.waitingOnPlayer
         })
       );
@@ -22,21 +48,19 @@ module.exports = class PlayerManager {
 
   playerJoin() {
     if (this.activePlayers.length === 0) {
-      this.activePlayers.push(PLAYER_ONE);
-      return PLAYER_ONE;
+      this.activePlayers.push(ConfigConstants.PLAYER_ONE_TOKEN);
+      return ConfigConstants.PLAYER_ONE_TOKEN;
     } else if (this.activePlayers.length === 1) {
-      this.activePlayers.push(PLAYER_TWO);
-      return PLAYER_TWO;
-    } else {
-      return MAX_PLAYERS_ERROR;
+      this.activePlayers.push(ConfigConstants.PLAYER_TWO_TOKEN);
+      return ConfigConstants.PLAYER_TWO_TOKEN;
     }
   }
 
   swapWaitingOnPlayer() {
-    if (this.waitingOnPlayer === PLAYER_ONE) {
-      this.waitingOnPlayer = PLAYER_TWO;
+    if (this.waitingOnPlayer === ConfigConstants.PLAYER_ONE_TOKEN) {
+      this.waitingOnPlayer = ConfigConstants.PLAYER_TWO_TOKEN;
     } else {
-      this.waitingOnPlayer = PLAYER_ONE;
+      this.waitingOnPlayer = ConfigConstants.PLAYER_ONE_TOKEN;
     }
   }
 

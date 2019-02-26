@@ -11,6 +11,7 @@ module.exports = Object.freeze({
   ROWS: 6,
   COLUMNS: 7,
   TOKEN_COLOR_MAP: {
+    "": "Ongoing",
     [emptyToken]: "white",
     [playerOneToken]: "black",
     [playerTwoToken]: "red"

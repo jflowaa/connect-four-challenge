@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Connect Four Challenge</title>
+  </head>
+  <body>
+    <div id="board"></div>
+    <div id="stats">
+      <button id="reset-btn">Reset</button>
+      <p>Player One Connected: <span id="player-one-connected"></span></p>
+      <p>Player Two Connected: <span id="player-two-connected"></span></p>
+      <p>Current Player Move: <span id="current-player-move"></span></p>
+      <p>Winner: <span id="winner"></span></p>
+    </div>
     <script type="text/javascript">
       var ws = new WebSocket("ws://127.0.0.1:3000/");
-      // ws.onopen = function() {
-      //   var initPayload = { command: "move", player: "x", column: 1 };
-      //   ws.send(JSON.stringify(initPayload));
-      // };
       ws.onmessage = function(evt) {
+        console.log(evt.data);
         getBoard();
+        getStats();
       };
       function getBoard() {
         fetch("http://127.0.0.1:3000/svg").then(function(response) {
@@ -17,10 +26,26 @@
           });
         });
       }
+      function getStats() {
+        fetch("http://127.0.0.1:3000/stats").then(function(response) {
+          response.json().then(function(json) {
+            document.getElementById("player-one-connected").innerHTML =
+              json.player_one;
+            document.getElementById("player-two-connected").innerHTML =
+              json.player_two;
+            document.getElementById("current-player-move").innerHTML =
+              json.current_turn;
+            document.getElementById("winner").innerHTML = json.winner;
+          });
+        });
+      }
+      function reset() {
+        fetch("http://127.0.0.1:3000/reset");
+        location.reload();
+      }
       getBoard();
+      getStats();
+      document.getElementById("reset-btn").addEventListener("click", reset);
     </script>
-  </head>
-  <body>
-    <div id="board"></div>
   </body>
 </html>
