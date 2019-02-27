@@ -3,7 +3,7 @@ from Player import Player
 
 class Human(Player):
     def __init__(self):
-        super().__init__()
+        super(Human, self).__init__()
 
     @staticmethod
     def make_move():

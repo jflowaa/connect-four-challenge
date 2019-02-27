@@ -6,7 +6,7 @@ from Player import Player
 
 class Bot(Player):
     def __init__(self):
-        super().__init__()
+        super(Bot, self).__init__()
 
     @staticmethod
     def make_move():
