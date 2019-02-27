@@ -1,7 +1,9 @@
-class Human:
+from Player import Player
+
+
+class Human(Player):
     def __init__(self):
-        self.board = []
-        self.token = ""
+        super().__init__()
 
     @staticmethod
     def make_move():

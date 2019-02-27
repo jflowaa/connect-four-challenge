@@ -2,9 +2,10 @@ from ws4py.client.threadedclient import WebSocketClient
 import json
 import sys
 
-from bot import Bot
-from human import Human
+from Bot import Bot
+from Human import Human
 
+# This can be changed to the server's local IP
 SERVER_URL = "ws://127.0.0.1:3000/"
 
 
@@ -13,9 +14,9 @@ class ConnectFourClient(WebSocketClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if len(sys.argv) > 1 and sys.argv[1] == "human":
-            self.bot = Human()
+            self.player = Human()
         else:
-            self.bot = Bot()
+            self.player = Bot()
 
     def opened(self):
         print("[*] Connected to server")
@@ -30,30 +31,41 @@ class ConnectFourClient(WebSocketClient):
             payload = json.loads(str(msg))
             command = payload.get("command")
             if "token" == command:
-                if payload.get("token"):
-                    self.bot.token = payload.get("token")
-                else:
-                    print("[!] Max players joined. Closing...")
-                    sys.exit()
+                self.handle_joined(payload)
             if "waiting" == command:
                 player = payload.get("player")
-                if self.bot.token == player:
-                    print("[+] Player's turn")
-                    self.bot.board = payload.get("board")
-                    self.bot.print_board()
-                    column = self.bot.make_move()
-                    self.send(json.dumps(
-                        {"command": "move", "player": self.bot.token, "column": column}))
+                if self.player.token == player:
+                    self.handle_turn(payload)
             if "winner" == command:
-                player = payload.get("player")
-                if self.bot.token == player:
-                    print("[+] Player won")
-                else:
-                    print("[+] Player lost")
-                sys.exit()
+                self.handle_winner(payload)
         except TypeError:
             print("[!] Unexpected message from server: {}".format(msg))
             sys.exit()
+
+    def handle_joined(self, payload):
+        if payload.get("token"):
+            print("[+] Joined")
+            print("[*] Player Token: {}".format(payload.get("token")))
+            self.player.token = payload.get("token")
+        else:
+            print("[!] Max players joined. Closing...")
+            sys.exit()
+
+    def handle_turn(self, payload):
+        print("[+] Player's turn")
+        self.player.board = payload.get("board")
+        self.player.print_board()
+        column = self.player.make_move()
+        self.send(json.dumps(
+            {"command": "move", "player": self.player.token, "column": column}))
+
+    def handle_winner(self, payload):
+        player = payload.get("player")
+        if self.player.token == player:
+            print("[+] Player won")
+        else:
+            print("[+] Player lost")
+        sys.exit()
 
 
 if __name__ == '__main__':

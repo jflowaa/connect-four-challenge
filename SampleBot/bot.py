@@ -1,11 +1,12 @@
 import random
 import time
 
+from Player import Player
 
-class Bot:
+
+class Bot(Player):
     def __init__(self):
-        self.board = []
-        self.token = ""
+        super().__init__()
 
     @staticmethod
     def make_move():
@@ -13,7 +14,7 @@ class Bot:
         Return a column to insert player token into.
 
         Returns a column to insert the player token into, this column is
-        determined based on the bot's logic and the current board state.
+        determined based on the bot logic and the current board state.
         """
         time.sleep(random.randint(0, 1) + .5)
         return random.randint(0, 6)
