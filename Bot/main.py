@@ -12,7 +12,7 @@ SERVER_URL = "ws://127.0.0.1:3000/"
 class ConnectFourClient(WebSocketClient):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(ConnectFourClient, self).__init__(*args, **kwargs)
         if len(sys.argv) > 1 and sys.argv[1] == "human":
             self.player = Human()
         else:
