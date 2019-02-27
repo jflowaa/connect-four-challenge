@@ -1,4 +1,7 @@
 class Human:
+    def __init__(self):
+        self.board = []
+        self.token = ""
 
     @staticmethod
     def make_move():

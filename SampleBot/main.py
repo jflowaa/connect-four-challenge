@@ -12,7 +12,6 @@ class ConnectFourClient(WebSocketClient):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.player_token = None
         if len(sys.argv) > 1 and sys.argv[1] == "human":
             self.bot = Human()
         else:
@@ -32,22 +31,22 @@ class ConnectFourClient(WebSocketClient):
             command = payload.get("command")
             if "token" == command:
                 if payload.get("token"):
-                    self.player_token = payload.get("token")
+                    self.bot.token = payload.get("token")
                 else:
                     print("[!] Max players joined. Closing...")
                     sys.exit()
             if "waiting" == command:
                 player = payload.get("player")
-                if self.player_token == player:
+                if self.bot.token == player:
                     print("[+] Player's turn")
                     self.bot.board = payload.get("board")
-                    column = self.bot.make_move()
                     self.bot.print_board()
+                    column = self.bot.make_move()
                     self.send(json.dumps(
-                        {"command": "move", "player": self.player_token, "column": column}))
+                        {"command": "move", "player": self.bot.token, "column": column}))
             if "winner" == command:
                 player = payload.get("player")
-                if self.player_token == player:
+                if self.bot.token == player:
                     print("[+] Player won")
                 else:
                     print("[+] Player lost")
