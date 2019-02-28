@@ -28,9 +28,10 @@ module.exports = class Board {
     for (var i = ConfigConstants.ROWS - 1; i >= 0; i--) {
       if (this.board[i][column] === ConfigConstants.EMPTY_TOKEN) {
         this.board[i][column] = token;
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   createBoardSvg() {

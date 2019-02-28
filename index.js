@@ -29,7 +29,12 @@ app.ws("/", function(ws, req) {
         break;
       case PlayerCommands.MOVE:
         if (parsedMessage.player === playerManager.waitingOnPlayer) {
-          board.move(playerManager.waitingOnPlayer, parsedMessage.column);
+          if (
+            !board.move(playerManager.waitingOnPlayer, parsedMessage.column)
+          ) {
+            // Swap now, since we're going to swap later, forcing the player to make a move again
+            playerManager.swapWaitingOnPlayer();
+          }
           if (board.checkWinner(playerManager.waitingOnPlayer)) {
             board.winningToken = playerManager.waitingOnPlayer;
             playerManager.broadcastWinnerMessage(expressWs);
